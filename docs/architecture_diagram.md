@@ -75,3 +75,15 @@ graph TD
 - **DNS Failover**: Route 53 utilizes health checks probing the `/healthz` endpoints of the EKS ingress in `us-east-1`. If timeouts occur, DNS routing shifts automatically to `us-west-2`.
 - **Database Replication**: Aurora Global Database replicates blocks asynchronously with latency under 1 second. In the event of a failover, the `us-west-2` cluster is promoted to the writer cluster via Terraform/AWS CLI scripts.
 - **Secrets High-Availability**: Vault cluster state is replicated between regions. Should the primary Vault become unreachable, the secondary cluster starts servicing API gateway authentication.
+
+## Dashboard Visualization
+The QuantumLedger web dashboard provides an interactive visualization of this architecture through:
+- **System Overview** panel: Shows real-time health status of EKS Cluster, Route53 Routing, RDS Aurora Database, and HashiCorp Vault Core.
+- **Consensus & Network** panel: An interactive SVG topology map rendering all consensus nodes (Core Ledger, DR Replica, Chase, Citi, HSBC, Retail API) with live connection lines and status indicators.
+- **Region Outage Simulator**: Demonstrates the full DNS failover from us-east-1 to us-west-2, including Aurora promotion and traffic weight shifting, within the 5.0-second RTO target.
+
+## Deployment Topology
+- **Production Deployment**: AWS EC2 instance running Docker containers (Nginx Alpine serving static dashboard).
+- **Container Configuration**: `docker-compose.yml` orchestrates dashboard + Prometheus + Grafana + Vault services.
+- **Auto-Recovery**: Docker service enabled on boot with `restart: unless-stopped` policy on all containers.
+- **Source Repository**: [GitHub - YadavSourabhGH/QuantumLedger---Devops](https://github.com/YadavSourabhGH/QuantumLedger---Devops)

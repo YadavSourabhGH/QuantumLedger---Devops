@@ -1,9 +1,47 @@
+# ========================
+# QuantumLedger .gitignore
+# ========================
+
 # Private keys and secrets
 *.pem
+*.key
+*.env
+.env.*
 
 # OS generated files
 .DS_Store
+.DS_Store?
 Thumbs.db
+ehthumbs.db
+Desktop.ini
 
 # Logs
 *.log
+npm-debug.log*
+
+# Node modules
+node_modules/
+
+# Terraform state and sensitive files
+*.tfstate
+*.tfstate.*
+*.tfvars
+.terraform/
+.terraform.lock.hcl
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Build output
+dist/
+build/
+
+# Docker volumes
+grafana-storage/
+
+# Gemini / AI tool artifacts
+.gemini/

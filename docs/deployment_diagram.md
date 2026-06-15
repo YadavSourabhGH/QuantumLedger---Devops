@@ -86,3 +86,23 @@ graph TD
 - **Non-Root Execution**: All application container workloads explicitly declare `securityContext.runAsNonRoot: true` and execute under UID `10001`.
 - **Read-Only Root Filesystem**: Core container filesystems are mounted read-only (`readOnlyRootFilesystem: true`), except for `/tmp` and `/vault/secrets` which are mounted as memory-backed `emptyDir` volumes.
 - **Resource Constraints**: Strict limits are configured to mitigate Denials of Service (CPU/Memory resource quotas enforced).
+
+## Dashboard Pod Visualization
+The web dashboard's **Kubernetes Pod Grid** (accessible in the Stress Simulators view) provides a live representation of the pod deployment topology:
+
+- **Pod Cards**: Each pod is displayed as a status card showing pod ID, role (api-gateway, chase-gateway, etc.), and status (running/pending/terminated).
+- **HPA Autoscaling**: During a Transaction Surge simulation, the API Gateway pods dynamically scale from 3 to 12 replicas, with new pods appearing in real-time.
+- **Status Indicators**: Color-coded badges — green (running), yellow (pending), red (terminated).
+- **HPA Summary**: Shows current autoscaler state including min/max replica bounds.
+
+## Docker Container Deployment
+The dashboard itself runs as a containerized Nginx Alpine service:
+
+| Container | Image | Port | Restart Policy |
+|---|---|---|---|
+| `quantumledger-dashboard` | Custom (nginx:alpine) | 80:80 | `unless-stopped` |
+| `quantumledger-prometheus` | prom/prometheus:latest | 9090:90 | `unless-stopped` |
+| `quantumledger-grafana` | grafana/grafana:latest | 3000:3000 | `unless-stopped` |
+| `quantumledger-vault` | hashicorp/vault:latest | 8200:8200 | `unless-stopped` |
+
+All services connect via a shared `cbdc-network` Docker bridge network.
