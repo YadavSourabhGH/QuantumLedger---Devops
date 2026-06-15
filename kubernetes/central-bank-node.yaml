@@ -1,0 +1,90 @@
+# ====================================================
+# Project QuantumLedger - Central Bank Ledger Node
+# ====================================================
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: cbdc-ledger-headless
+  labels:
+    app: cbdc-ledger
+spec:
+  ports:
+    - port: 50051
+      name: consensus-grpc
+    - port: 8080
+      name: http-metrics
+  clusterIP: None
+  selector:
+    app: cbdc-ledger
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: cbdc-ledger
+  labels:
+    app: cbdc-ledger
+spec:
+  serviceName: cbdc-ledger-headless
+  replicas: 3
+  selector:
+    matchLabels:
+      app: cbdc-ledger
+  template:
+    metadata:
+      labels:
+        app: cbdc-ledger
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        fsGroup: 10001
+      containers:
+        - name: ledger-engine
+          image: quantumledger/cbdc-ledger:v1.2.4
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 50051
+              name: consensus-grpc
+            - containerPort: 8080
+              name: http-metrics
+          env:
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: CLUSTER_SIZE
+              value: "3"
+            - name: VAULT_ADDR
+              value: "http://vault.security.svc.cluster.local:8200"
+          resources:
+            requests:
+              cpu: "1000m"
+              memory: "2Gi"
+            limits:
+              cpu: "2000m"
+              memory: "4Gi"
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 20
+          volumeMounts:
+            - name: ledger-db-storage
+              mountPath: /var/lib/quantumledger/data
+  volumeClaimTemplates:
+    - metadata:
+        name: ledger-db-storage
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        resources:
+          requests:
+            storage: 100Gi
+        storageClassName: "gp3"

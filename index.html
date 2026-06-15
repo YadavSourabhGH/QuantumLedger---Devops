@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QuantumLedger - CBDC DevOps Operations Platform</title>
+  <!-- Modern Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <!-- Chart.js for graphs -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Custom Stylesheet -->
+  <link rel="stylesheet" href="app.css">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+
+  <!-- ==================================================== -->
+  <!-- 1. LANDING PAGE CONTENT                              -->
+  <!-- ==================================================== -->
+  <div id="landing-page">
+    
+    <!-- Landing Navigation -->
+    <nav class="landing-nav">
+      <div class="landing-nav-container">
+        <div class="nav-logo">
+          <span class="logo-icon"><i data-lucide="layers"></i></span>
+          <span class="logo-wordmark">QuantumLedger</span>
+        </div>
+        <div class="nav-actions">
+          <button id="btn-enter-nav" class="btn btn-primary nav-btn">Launch Control Center <i data-lucide="arrow-right"></i></button>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Landing Hero -->
+    <header class="landing-hero">
+      <div class="landing-hero-container">
+        <span class="badge-pill">Sovereign Financial Infrastructure</span>
+        <h1 class="landing-title">Go to market with resilient digital currency.</h1>
+        <p class="landing-subtitle">
+          QuantumLedger operates a high-availability, multi-national CBDC ecosystem supporting commercial settlement, transaction compliance, and automated multi-region disaster recovery.
+        </p>
+        
+        <!-- Big Centered CTA Button -->
+        <div class="center-btn-wrapper">
+          <button id="btn-enter-hero" class="btn btn-primary btn-large">Enter Operations Dashboard <i data-lucide="arrow-right"></i></button>
+        </div>
+
+        <!-- Hero Illustration -->
+        <div class="landing-showcase">
+          <img src="claymation_hero.png" alt="QuantumLedger 3D Hero" class="landing-hero-img">
+        </div>
+      </div>
+    </header>
+
+    <!-- Capability Section ("What we do") -->
+    <section class="landing-capabilities">
+      <div class="container-1280">
+        <div class="section-header">
+          <span class="badge-pill">Platform Architecture</span>
+          <h2 class="section-title">What QuantumLedger Does</h2>
+          <p class="section-desc">We build enterprise-scale transaction engines and self-healing cloud delivery channels for next-generation central banking.</p>
+        </div>
+        
+        <div class="capabilities-grid">
+          <!-- Card 1 -->
+          <div class="capability-card">
+            <div class="cap-icon color-pink"><i data-lucide="zap"></i></div>
+            <h3>CBDC Transaction Settlement</h3>
+            <p>Processes billions of sovereign retail and commercial bank transactions daily with near-zero latency, verified via automated merkle trees.</p>
+          </div>
+          <!-- Card 2 -->
+          <div class="capability-card">
+            <div class="cap-icon color-teal"><i data-lucide="refresh-cw"></i></div>
+            <h3>Automated Incident Self-Healing</h3>
+            <p>EKS clusters scale dynamically under peak loads, Route53 routes around regional outages, and Raft consensus reconciles node sync lags.</p>
+          </div>
+          <!-- Card 3 -->
+          <div class="capability-card">
+            <div class="cap-icon color-lavender"><i data-lucide="lock"></i></div>
+            <h3>DevSecOps Compliance & Guardrails</h3>
+            <p>Injects database dynamic secret leases via HashiCorp Vault, rotates certificates on demand, and defends interfaces using WAF rate block lists.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Landing Footer -->
+    <footer class="landing-footer">
+      <p>© 2026 QuantumLedger Financial Infrastructure. Sovereign B2B SaaS Design System.</p>
+    </footer>
+
+  </div>
+
+  <!-- ==================================================== -->
+  <!-- 2. DETAILED APP SHELL (DASHBOARD)                    -->
+  <!-- ==================================================== -->
+  <div id="dashboard-app" style="display: none;">
+    <div class="app-layout">
+      
+      <!-- Left Sidebar Menu -->
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <div class="nav-logo">
+            <span class="logo-icon"><i data-lucide="layers"></i></span>
+            <span class="logo-wordmark">QuantumLedger</span>
+          </div>
+          <span class="sidebar-tag">Ops Center</span>
+        </div>
+        
+        <nav class="sidebar-menu">
+          <button class="sidebar-menu-item active" data-view="view-overview">
+            <span class="menu-icon"><i data-lucide="bar-chart-2"></i></span>
+            <span>System Overview</span>
+          </button>
+          <button class="sidebar-menu-item" data-view="view-simulators">
+            <span class="menu-icon"><i data-lucide="terminal"></i></span>
+            <span>Stress Simulators</span>
+          </button>
+          <button class="sidebar-menu-item" data-view="view-network">
+            <span class="menu-icon"><i data-lucide="git-branch"></i></span>
+            <span>Consensus & Network</span>
+          </button>
+          <button class="sidebar-menu-item" data-view="view-telemetry">
+            <span class="menu-icon"><i data-lucide="activity"></i></span>
+            <span>Live Telemetry</span>
+          </button>
+          <button class="sidebar-menu-item" data-view="view-security">
+            <span class="menu-icon"><i data-lucide="shield"></i></span>
+            <span>Vault & Security</span>
+          </button>
+        </nav>
+        
+        <div class="sidebar-footer">
+          <button id="btn-restore" class="btn btn-secondary btn-sidebar-reset">Reset Environment</button>
+          
+          <!-- Student Academic Profile Metadata -->
+          <div class="sidebar-profile">
+            <div class="profile-title">ACADEMIC PROFILE</div>
+            <div class="profile-detail">Sourabh Dinesh Yadav</div>
+            <div class="profile-detail">Roll: 150096724013</div>
+            <div class="profile-detail">Cohort: MZ</div>
+            <div class="profile-detail">Batch: 2024-28</div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Right Workspace Panel -->
+      <main class="workspace-content">
+        
+        <!-- Workspace Top Header -->
+        <header class="workspace-header">
+          <div class="header-left">
+            <h1 id="view-title">System Overview</h1>
+          </div>
+          <div class="header-right">
+            <!-- Global Status Badge -->
+            <div class="nav-status-badge">
+              <span class="status-dot online" id="global-status-dot"></span>
+              <span class="status-text" id="global-status-text">AWS us-east-1 ● OPERATIONAL</span>
+            </div>
+            
+            <button id="btn-back-to-landing" class="btn btn-secondary nav-btn">Exit Dashboard</button>
+          </div>
+        </header>
+
+        <!-- View Viewport -->
+        <div class="view-viewport">
+
+          <!-- ========================================== -->
+          <!-- VIEW 1: SYSTEM OVERVIEW                    -->
+          <!-- ========================================== -->
+          <div class="view-panel active" id="view-overview">
+            
+            <!-- Quick Live Stats Panel -->
+            <div class="overview-stats-grid">
+              <div class="overview-stat-card">
+                <span class="stat-lbl">Throughput</span>
+                <span class="stat-num" id="hero-val-tps">120 tps</span>
+                <span class="stat-desc">Transactions Per Second</span>
+              </div>
+              <div class="overview-stat-card">
+                <span class="stat-lbl">Avg Latency</span>
+                <span class="stat-num" id="hero-val-latency">14ms</span>
+                <span class="stat-desc">Network Round Trip Time</span>
+              </div>
+              <div class="overview-stat-card">
+                <span class="stat-lbl">Active Pods</span>
+                <span class="stat-num" id="hero-val-pods">6 replicas</span>
+                <span class="stat-desc">K8s Container Instances</span>
+              </div>
+              <div class="overview-stat-card">
+                <span class="stat-lbl">Error Rate</span>
+                <span class="stat-num success-text" id="hero-val-error">0.00%</span>
+                <span class="stat-desc">Consensus Rejection Rate</span>
+              </div>
+            </div>
+
+            <!-- Health Status Details & Active Alerts table -->
+            <div class="overview-grid-main">
+              <!-- System Components Health Card -->
+              <div class="overview-card health-components-card">
+                <h3 class="overview-card-title">Infrastructure Health</h3>
+                <div class="health-list">
+                  <div class="health-item">
+                    <span class="health-name">AWS EKS Cluster</span>
+                    <span class="health-status-badge success" id="health-eks">Normal</span>
+                  </div>
+                  <div class="health-item">
+                    <span class="health-name">Route53 Global Routing</span>
+                    <span class="health-status-badge success" id="health-route53">Primary</span>
+                  </div>
+                  <div class="health-item">
+                    <span class="health-name">RDS Aurora Database</span>
+                    <span class="health-status-badge success" id="health-rds">Synchronized</span>
+                  </div>
+                  <div class="health-item">
+                    <span class="health-name">HashiCorp Vault Core</span>
+                    <span class="health-status-badge success" id="health-vault">Sealed (Auto)</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Active Incidents & Log Stream table -->
+              <div class="overview-card alert-monitor-card">
+                <h3 class="overview-card-title">Operations Incident Monitor</h3>
+                <div class="alert-table-wrapper">
+                  <table class="alert-table">
+                    <thead>
+                      <tr>
+                        <th>Incident Time</th>
+                        <th>Component</th>
+                        <th>Event Description</th>
+                        <th>Recovery State</th>
+                      </tr>
+                    </thead>
+                    <tbody id="alerts-table-body">
+                      <tr>
+                        <td colspan="4" class="table-empty-row">System operational. No active incidents.</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- ========================================== -->
+          <!-- VIEW 2: STRESS SIMULATORS                  -->
+          <!-- ========================================== -->
+          <div class="view-panel" id="view-simulators">
+            
+            <div class="simulators-banner">
+              <h3>Trigger Stress Scenarios</h3>
+              <p>Simulate production incidents to test infrastructure failovers, dynamic scaling, and credentials rotations.</p>
+            </div>
+
+            <div class="feature-cards-grid">
+              
+              <!-- Card 1: Transaction Surge (Hot Pink) -->
+              <div class="feature-card-pink">
+                <div class="card-inner">
+                  <div class="card-header-block">
+                    <span class="card-label">STRESS TEST 01</span>
+                    <h3 class="card-title">Transaction Surge</h3>
+                    <p class="card-desc">Simulate a high-load surge of 12,000 TPS to test HPA container scale-out.</p>
+                  </div>
+                  <div class="card-actions">
+                    <button id="btn-surge" class="btn btn-on-color">Trigger Surge</button>
+                  </div>
+                  <div class="card-ui-fragment surge-fragment">
+                    <div class="tps-dial">
+                      <span class="dial-num" id="tps-dial-val">120</span>
+                      <span class="dial-unit">TPS</span>
+                    </div>
+                    <div class="scale-info">HPA Trigger: <strong>80% CPU</strong></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Card 2: Region Outage (Deep Teal) -->
+              <div class="feature-card-teal">
+                <div class="card-inner">
+                  <div class="card-header-block">
+                    <span class="card-label">STRESS TEST 02</span>
+                    <h3 class="card-title">Region Outage</h3>
+                    <p class="card-desc">Simulate us-east-1 failure to trigger automated Route53 DR failover.</p>
+                  </div>
+                  <div class="card-actions">
+                    <button id="btn-outage" class="btn btn-on-color btn-danger-theme">Trigger Outage</button>
+                  </div>
+                  <div class="card-ui-fragment outage-fragment">
+                    <div class="region-pill-box">
+                      <div class="region-pill active" id="region-east">
+                        <span class="pill-dot"></span>
+                        <span>us-east-1 (Primary)</span>
+                      </div>
+                      <div class="region-arrow"><i data-lucide="arrow-right"></i></div>
+                      <div class="region-pill standby" id="region-west">
+                        <span class="pill-dot"></span>
+                        <span>us-west-2 (Standby)</span>
+                      </div>
+                    </div>
+                    <div class="rto-target">RTO: <strong>&lt; 5.0s</strong> | RPO: <strong>Sync</strong></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Card 5: Jenkins Pipeline (Ochre) -->
+              <div class="feature-card-ochre">
+                <div class="card-inner">
+                  <div class="card-header-block">
+                    <span class="card-label">DEVOPS DELIVERY</span>
+                    <h3 class="card-title">Jenkins CI/CD</h3>
+                    <p class="card-desc">Simulate a Git trigger deployment building, scanning, and rolling out code.</p>
+                  </div>
+                  <div class="card-actions">
+                    <button id="btn-jenkins" class="btn btn-secondary full-width">Trigger CI/CD Pipeline</button>
+                  </div>
+                  <div class="card-ui-fragment jenkins-fragment">
+                    <div class="pipeline-progress-container" style="display: none;">
+                      <div class="pipeline-stages">
+                        <div class="stage" id="stage-checkout"><div class="stage-dot"></div><span>Checkout</span></div>
+                        <div class="stage" id="stage-lint"><div class="stage-dot"></div><span>Lint & Test</span></div>
+                        <div class="stage" id="stage-build"><div class="stage-dot"></div><span>Build</span></div>
+                        <div class="stage" id="stage-scan"><div class="stage-dot"></div><span>Scan</span></div>
+                        <div class="stage" id="stage-terraform"><div class="stage-dot"></div><span>TF Apply</span></div>
+                        <div class="stage" id="stage-deploy"><div class="stage-dot"></div><span>Deploy</span></div>
+                      </div>
+                    </div>
+                    <div class="jenkins-log-text" id="jenkins-logs-text">
+                      System idle. Click Trigger CI/CD Pipeline.
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Card 6: Kubernetes Pod Grid Status (Cream Card) -->
+              <div class="feature-card-cream">
+                <div class="card-inner">
+                  <div class="card-header-block">
+                    <span class="card-label">CLUSTER ORCHESTRATION</span>
+                    <h3 class="card-title">Kubernetes Pod Grid</h3>
+                    <p class="card-desc">Active EKS cluster replica instances autoscaling dynamically.</p>
+                  </div>
+                  <div class="card-ui-fragment pods-fragment">
+                    <div class="pod-grid-container" id="pod-grid">
+                      <!-- Pod cards generated here -->
+                    </div>
+                    <div class="pods-hpa-summary">
+                      <span>Status: <strong id="hpa-status">Idle (Min: 3, Max: 15)</strong></span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+
+          <!-- ========================================== -->
+          <!-- VIEW 3: CONSENSUS & NETWORK MAP            -->
+          <!-- ========================================== -->
+          <div class="view-panel" id="view-network">
+            
+            <div class="network-layout-container">
+              
+              <!-- Ledger consensus network map visualizer -->
+              <div class="network-card map-view">
+                <h3 class="network-card-title">Global Ledger Consensus Node Topography</h3>
+                <div class="network-fragment-wrapper">
+                  <div class="network-ui-fragment network-fragment">
+                    <div class="network-map-wrapper">
+                      <svg class="network-connections" id="network-svg">
+                        <path class="connection-line" id="line-cb-chase" d="" />
+                        <path class="connection-line" id="line-cb-citi" d="" />
+                        <path class="connection-line" id="line-cb-hsbc" d="" />
+                        <path class="connection-line" id="line-cb-retail" d="" />
+                        <path class="connection-line" id="line-primary-backup" d="" />
+                      </svg>
+                      
+                      <!-- Ledger nodes mapped -->
+                      <div class="node central-bank-node" id="node-cb" style="top: 45%; left: 50%;">
+                        <div class="node-pulse"></div>
+                        <div class="node-icon"><i data-lucide="server"></i></div>
+                        <div class="node-name">Core Ledger</div>
+                        <div class="node-status text-online" id="status-cb">Primary</div>
+                      </div>
+                      
+                      <div class="node central-bank-backup" id="node-cb-backup" style="top: 15%; left: 80%;">
+                        <div class="node-pulse"></div>
+                        <div class="node-icon"><i data-lucide="copy"></i></div>
+                        <div class="node-name">DR Replica</div>
+                        <div class="node-status text-standby" id="status-cb-backup">Standby</div>
+                      </div>
+
+                      <div class="node bank-node" id="node-chase" style="top: 80%; left: 20%;">
+                        <div class="node-pulse"></div>
+                        <div class="node-icon"><i data-lucide="landmark"></i></div>
+                        <div class="node-name">Chase Node</div>
+                        <div class="node-status text-online" id="status-chase">Online</div>
+                      </div>
+
+                      <div class="node bank-node" id="node-citi" style="top: 80%; left: 50%;">
+                        <div class="node-pulse"></div>
+                        <div class="node-icon"><i data-lucide="landmark"></i></div>
+                        <div class="node-name">Citi Node</div>
+                        <div class="node-status text-online" id="status-citi">Online</div>
+                      </div>
+
+                      <div class="node bank-node" id="node-hsbc" style="top: 80%; left: 80%;">
+                        <div class="node-pulse"></div>
+                        <div class="node-icon"><i data-lucide="landmark"></i></div>
+                        <div class="node-name">HSBC Node</div>
+                        <div class="node-status text-online" id="status-hsbc">Online</div>
+                      </div>
+
+                      <div class="node merchant-node" id="node-retail" style="top: 15%; left: 20%;">
+                        <div class="node-pulse"></div>
+                        <div class="node-icon"><i data-lucide="shopping-bag"></i></div>
+                        <div class="node-name">Retail API</div>
+                        <div class="node-status text-online" id="status-retail">Online</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="map-actions">
+                  <button id="btn-desync" class="btn btn-secondary">Simulate Consensus Desync</button>
+                </div>
+              </div>
+
+              <!-- Network consensus status details panel -->
+              <div class="network-card stats-view">
+                <h3 class="network-card-title">Consensus State</h3>
+                
+                <div class="consensus-detail-card">
+                  <div class="c-stat-row">
+                    <span class="c-lbl">Block Height</span>
+                    <span class="c-val mono" id="consensus-block-height">9,251,800</span>
+                  </div>
+                  <div class="c-stat-row">
+                    <span class="c-lbl">Consensus Agreement</span>
+                    <span class="c-val success-text" id="consensus-agreement">100.0%</span>
+                  </div>
+                  <div class="c-stat-row">
+                    <span class="c-lbl">Active Validators</span>
+                    <span class="c-val" id="consensus-validators-count">5 / 5 Active</span>
+                  </div>
+                </div>
+
+                <div class="consensus-progress-box">
+                  <span class="c-lbl">Synchronization Progress</span>
+                  <div class="c-progress-container">
+                    <div class="c-progress-bar" id="consensus-sync-progress-bar" style="width: 100%;"></div>
+                  </div>
+                  <div class="c-progress-text">
+                    <span id="consensus-sync-percentage">100%</span> Synchronized
+                  </div>
+                </div>
+
+                <div class="consensus-logs-container">
+                  <span class="c-lbl">Consensus Voting Log Stream</span>
+                  <div class="c-logs-stream" id="consensus-log-box">
+                    <div class="c-log-line">[14:02:11] [CONSENSUS] Proposed block #9251800. Merkle hash: 0x8dfa91...</div>
+                    <div class="c-log-line">[14:02:11] [CONSENSUS] Validator votes gathered: 5/5. Block committed.</div>
+                  </div>
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+          <!-- ========================================== -->
+          <!-- VIEW 4: LIVE TELEMETRY & CHARTS            -->
+          <!-- ========================================== -->
+          <div class="view-panel" id="view-telemetry">
+            
+            <div class="telemetry-layout">
+              
+              <!-- Large-screen live chart panel -->
+              <div class="telemetry-card chart-view">
+                <h3 class="telemetry-card-title">Real-Time Metric Stream</h3>
+                <div class="telemetry-chart-container">
+                  <canvas id="metricsChart"></canvas>
+                </div>
+              </div>
+
+              <!-- Metrics panels & dials -->
+              <div class="telemetry-card metrics-dials-view">
+                <h3 class="telemetry-card-title">Telemetry Dials</h3>
+                
+                <div class="dials-grid">
+                  <div class="dial-item">
+                    <span class="dial-title">CPU Load</span>
+                    <span class="dial-value" id="val-cpu">8%</span>
+                    <div class="dial-progress"><div class="dial-bar" id="dial-cpu-bar" style="width: 8%;"></div></div>
+                  </div>
+                  <div class="dial-item">
+                    <span class="dial-title">Memory Allocation</span>
+                    <span class="dial-value" id="val-memory">42%</span>
+                    <div class="dial-progress"><div class="dial-bar" id="dial-mem-bar" style="width: 42%;"></div></div>
+                  </div>
+                  <div class="dial-item">
+                    <span class="dial-title">Telemetry Queue</span>
+                    <span class="dial-value">Normal</span>
+                    <div class="dial-progress"><div class="dial-bar success" style="width: 100%;"></div></div>
+                  </div>
+                  <div class="dial-item">
+                    <span class="dial-title">Consensus Delay</span>
+                    <span class="dial-value" id="val-latency">14ms</span>
+                    <div class="dial-progress"><div class="dial-bar" id="dial-latency-bar" style="width: 3%;"></div></div>
+                  </div>
+                </div>
+
+                <div class="telemetry-metric-summary">
+                  <div class="telemetry-mini-card">
+                    <span class="mini-lbl">TPS</span>
+                    <span class="mini-num" id="val-tps">120 tps</span>
+                  </div>
+                  <div class="telemetry-mini-card">
+                    <span class="mini-lbl">Errors</span>
+                    <span class="mini-num success-text" id="val-error">0.00%</span>
+                  </div>
+                </div>
+
+              </div>
+
+            </div>
+
+            <!-- Log Panel (ELK stream next to chart) -->
+            <div class="telemetry-logs-card">
+              <h3 class="telemetry-card-title">ELK Central Log Analyzer</h3>
+              <div class="elk-logs-container" id="tab-elk">
+                <!-- ELK logs stream here -->
+              </div>
+            </div>
+
+          </div>
+
+          <!-- ========================================== -->
+          <!-- VIEW 5: VAULT & SECURITY                   -->
+          <!-- ========================================== -->
+          <div class="view-panel" id="view-security">
+            
+            <div class="security-layout-container">
+              
+              <!-- Saturated Peach Card: Credentials rotation -->
+              <div class="feature-card-peach">
+                <div class="card-inner">
+                  <div class="card-header-block">
+                    <span class="card-label">STRESS TEST 04</span>
+                    <h3 class="card-title">Vault Key Rotation</h3>
+                    <p class="card-desc">Simulate client key compromise and rotate database dynamic secrets via HashiCorp Vault.</p>
+                  </div>
+                  <div class="card-actions horizontal">
+                    <button id="btn-attack" class="btn btn-secondary">Simulate Attack</button>
+                    <button id="btn-rotate" class="btn btn-primary">Rotate Vault Keys</button>
+                  </div>
+                  <div class="card-ui-fragment logs-fragment">
+                    <div class="mini-title">Vault Audit Log Stream</div>
+                    <div class="log-box-mini" id="tab-vault">
+                      <!-- Vault logs populate here -->
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Security credentials audit dashboard -->
+              <div class="security-card audit-view">
+                <h3 class="security-card-title">Credential Audit Dashboard</h3>
+                
+                <div class="credentials-status-card">
+                  <div class="audit-row">
+                    <span class="audit-lbl">Database Leases Active</span>
+                    <span class="audit-val mono" id="sec-active-leases">12 Leases</span>
+                  </div>
+                  <div class="audit-row">
+                    <span class="audit-lbl">Vault Token TTL</span>
+                    <span class="audit-val" id="sec-token-ttl">59m 12s</span>
+                  </div>
+                  <div class="audit-row">
+                    <span class="audit-lbl">WAF Blocks (Last 10m)</span>
+                    <span class="audit-val success-text" id="sec-waf-blocks">0 blocks</span>
+                  </div>
+                  <div class="audit-row">
+                    <span class="audit-lbl">Secret Engine Status</span>
+                    <span class="audit-val success-text" id="sec-engine-status">Compliant</span>
+                  </div>
+                </div>
+
+                <div class="security-compliance-box">
+                  <span class="audit-lbl">Compliance Health Index</span>
+                  <div class="compliance-gauge">
+                    <div class="gauge-value" id="sec-compliance-score">100%</div>
+                    <div class="gauge-bar-wrapper">
+                      <div class="gauge-bar" id="sec-compliance-bar" style="width: 100%;"></div>
+                    </div>
+                  </div>
+                  <p class="compliance-desc">SOC2 & ISO 27001 dynamic audit state evaluates local secrets TTL, token usage anomaly, and pod key refresh times.</p>
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+      </main>
+
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

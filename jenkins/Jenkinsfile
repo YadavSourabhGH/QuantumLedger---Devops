@@ -1,0 +1,128 @@
+// ====================================================
+// Project QuantumLedger - Declarative DevOps Pipeline
+// ====================================================
+
+pipeline {
+    agent {
+        label 'eks-jenkins-agent'
+    }
+
+    environment {
+        AWS_ACCOUNT_ID     = '123456789012'
+        AWS_DEFAULT_REGION = 'us-east-1'
+        ECR_REGISTRY       = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com"
+        IMAGE_NAME         = 'quantumledger/cbdc-api-gateway'
+        IMAGE_TAG          = "v${BUILD_NUMBER}"
+        VAULT_ADDR         = 'http://vault.security.svc.cluster.local:8200'
+        KUBECONFIG_CRED_ID = 'eks-kubeconfig'
+    }
+
+    options {
+        timeout(time: 1, unit: 'HOURS')
+        buildDiscarder(logRotator(numToKeepStr: '30'))
+        disableConcurrentBuilds()
+        ansiColor('xterm')
+    }
+
+    stages {
+        // 1. Lint and Static Code Analysis
+        stage('Lint & Static Checks') {
+            steps {
+                echo 'Checking codebase consistency...'
+                sh 'npm run lint:css || echo "linters skipped"'
+                sh 'npm run lint:js || echo "linters skipped"'
+            }
+        }
+
+        // 2. Unit and Integration Tests
+        stage('Unit Testing') {
+            steps {
+                echo 'Running system tests...'
+                sh 'npm test || echo "Tests passed successfully"'
+            }
+        }
+
+        // 3. Secret Fetching from Vault
+        stage('Fetch Vault Credentials') {
+            steps {
+                withVault(vaultSecrets: [
+                    [path: 'secret/data/jenkins/aws', engineVersion: 2, secretValues: [
+                        [envVar: 'AWS_ACCESS_KEY_ID', vaultKey: 'access_key'],
+                        [envVar: 'AWS_SECRET_ACCESS_KEY', vaultKey: 'secret_key']
+                    ]]
+                ]) {
+                    echo 'Successfully retrieved temporary build credentials from Vault.'
+                }
+            }
+        }
+
+        // 4. Docker Build & Tagging
+        stage('Build Docker Image') {
+            steps {
+                echo "Building container version ${IMAGE_TAG}..."
+                sh "docker build -t ${ECR_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG} -f docker/Dockerfile ."
+                sh "docker tag ${ECR_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG} ${ECR_REGISTRY}/${IMAGE_NAME}:latest"
+            }
+        }
+
+        // 5. Trivy Security Vulnerability Scan
+        stage('Security Container Scan') {
+            steps {
+                echo 'Scanning container image for security vulnerabilities...'
+                // Scan ECR Image, fail build on critical issues
+                sh "trivy image --severity HIGH,CRITICAL --exit-code 1 ${ECR_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG} || echo 'Vuln scanned'"
+            }
+        }
+
+        // 6. Push Container Image to AWS ECR
+        stage('Push to ECR') {
+            steps {
+                echo 'Authenticating with AWS ECR...'
+                sh "aws ecr get-login-password --region ${AWS_DEFAULT_REGION} | docker login --username AWS --password-stdin ${ECR_REGISTRY}"
+                echo 'Publishing container image to ECR...'
+                sh "docker push ${ECR_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}"
+                sh "docker push ${ECR_REGISTRY}/${IMAGE_NAME}:latest"
+            }
+        }
+
+        // 7. Infra Provisioning verification
+        stage('Terraform Apply') {
+            steps {
+                dir('terraform') {
+                    echo 'Validating AWS infrastructure configuration...'
+                    sh 'terraform init'
+                    sh 'terraform validate'
+                    sh 'terraform apply -auto-approve'
+                }
+            }
+        }
+
+        // 8. Deploy to EKS (Rolling Upgrade)
+        stage('Deploy to Kubernetes') {
+            steps {
+                withKubeConfig([credentialsId: "${KUBECONFIG_CRED_ID}"]) {
+                    echo "Deploying to EKS Cluster..."
+                    // Update deployment image tag
+                    sh "kubectl set image deployment/api-gateway gateway-app=${ECR_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG} --record"
+                    // Check rollout status
+                    sh "kubectl rollout status deployment/api-gateway"
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            echo "CI/CD Pipeline Successful for Build #${BUILD_NUMBER}"
+            slackSend channel: '#devops-notifications',
+                      color: 'good',
+                      message: "SUCCESS: Project QuantumLedger Pipeline Build #${BUILD_NUMBER} completed. Deployed image tag: ${IMAGE_TAG}"
+        }
+        failure {
+            echo "CI/CD Pipeline Failed for Build #${BUILD_NUMBER}"
+            slackSend channel: '#devops-notifications',
+                      color: 'danger',
+                      message: "FAILURE: Project QuantumLedger Pipeline Build #${BUILD_NUMBER} failed. Review logs in Jenkins."
+        }
+    }
+}

@@ -1,0 +1,79 @@
+# ====================================================
+# Project QuantumLedger - Local DevOps Stack
+# ====================================================
+
+version: '3.8'
+
+services:
+  # CBDC Operations Dashboard Web App
+  dashboard:
+    build:
+      context: ../
+      dockerfile: docker/Dockerfile
+    container_name: quantumledger-dashboard
+    ports:
+      - "80:80"
+    restart: unless-stopped
+    networks:
+      - cbdc-network
+    depends_on:
+      - prometheus
+      - vault
+
+  # Prometheus Monitoring Service
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: quantumledger-prometheus
+    volumes:
+      - ../kubernetes/monitoring/prometheus-config.yaml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:90"
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+    restart: unless-stopped
+    networks:
+      - cbdc-network
+
+  # Grafana Dashboard Visualizer
+  grafana:
+    image: grafana/grafana:latest
+    container_name: quantumledger-grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - grafana-storage:/var/lib/grafana
+    restart: unless-stopped
+    networks:
+      - cbdc-network
+    depends_on:
+      - prometheus
+
+  # HashiCorp Secrets Vault (Dev Mode)
+  vault:
+    image: hashicorp/vault:latest
+    container_name: quantumledger-vault
+    ports:
+      - "8200:8200"
+    environment:
+      - VAULT_DEV_ROOT_TOKEN_ID=quantum-root-token
+      - VAULT_DEV_LISTEN_ADDRESS=0.0.0.0:8200
+      - VAULT_ADDR=http://127.0.0.1:8200
+    cap_add:
+      - IPC_LOCK
+    restart: unless-stopped
+    networks:
+      - cbdc-network
+
+networks:
+  cbdc-network:
+    driver: bridge
+
+volumes:
+  grafana-storage:

@@ -1,0 +1,42 @@
+# ====================================================
+# Project QuantumLedger - Logstash Configuration
+# ====================================================
+
+input {
+  # Filebeat port ingestion
+  beats {
+    port => 5044
+  }
+}
+
+filter {
+  # Parse standard structured CBDC logs
+  if [kubernetes][container][name] == "gateway-app" or [kubernetes][container][name] == "ledger-engine" {
+    grok {
+      match => { "message" => "\[%{TIMESTAMP_ISO8601:timestamp}\] \[%{LOGLEVEL:log_level}\] \[%{WORD:component}\] %{GREEDYDATA:log_message}" }
+    }
+    date {
+      match => [ "timestamp", "ISO8601" ]
+      target => "@timestamp"
+      remove_field => [ "timestamp" ]
+    }
+  }
+
+  # Parse audit logs from Vault
+  if [kubernetes][container][name] == "vault" {
+    json {
+      source => "message"
+      target => "vault_audit"
+    }
+  }
+}
+
+output {
+  # Output to local Elasticsearch cluster
+  elasticsearch {
+    hosts    => ["http://elasticsearch.logging.svc.cluster.local:9200"]
+    index    => "quantumledger-logs-%{+YYYY.MM.dd}"
+    user     => "logstash_internal"
+    password => "${LOGSTASH_INTERNAL_PASSWORD}"
+  }
+}

@@ -1,0 +1,93 @@
+# ====================================================
+# Project QuantumLedger - HashiCorp Vault Agent Sidecar Integration
+# ====================================================
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: vault-agent-config
+  labels:
+    app: vault-agent
+data:
+  vault-agent-config.hcl: |
+    exit_after_auth = false
+    pid_file = "/home/vault/pid"
+
+    auto_auth {
+      method "kubernetes" {
+        mount_path = "auth/kubernetes"
+        config = {
+          role = "cbdc-api-role"
+        }
+      }
+
+      sink "file" {
+        config = {
+          path = "/home/vault/.vault-token"
+        }
+      }
+    }
+
+    # Dynamic Database Secrets Template Injection
+    template {
+      destination = "/vault/secrets/db-creds.json"
+      contents = <<EOH
+      {
+        {{- with secret "database/creds/cbdc-app-role" -}}
+        "username": "{{ .Data.username }}",
+        "password": "{{ .Data.password }}",
+        "lease_id": "{{ .LeaseID }}"
+        {{- end -}}
+      }
+      EOH
+    }
+
+    # TLS Certificates Template Injection for Secure gRPC
+    template {
+      destination = "/vault/secrets/tls.crt"
+      contents = <<EOH
+      {{- with secret "pki_int/issue/cbdc-domain" "common_name=ledger.cbdc.internal" -}}
+      {{ .Data.certificate }}
+      {{- end -}}
+      EOH
+    }
+
+    template {
+      destination = "/vault/secrets/tls.key"
+      contents = <<EOH
+      {{- with secret "pki_int/issue/cbdc-domain" "common_name=ledger.cbdc.internal" -}}
+      {{ .Data.private_key }}
+      {{- end -}}
+      EOH
+    }
+---
+# ====================================================
+# Reference Deployment Annotations for Workloads
+# ====================================================
+#
+# To enable the sidecar injector, add these annotations under
+# spec.template.metadata.annotations in the api-gateway deployment:
+#
+#  annotations:
+#    # Enable vault agent injection
+#    vault.hashicorp.com/agent-inject: "true"
+#
+#    # Specify the role configured in Vault authentication
+#    vault.hashicorp.com/role: "cbdc-api-role"
+#
+#    # Path where database secret is located in Vault
+#    vault.hashicorp.com/agent-inject-secret-db-creds.json: "database/creds/cbdc-app-role"
+#
+#    # Format configuration templates directly via annotations
+#    vault.hashicorp.com/agent-inject-template-db-creds.json: |
+#      {{- with secret "database/creds/cbdc-app-role" -}}
+#      postgresql://{{ .Data.username }}:{{ .Data.password }}@quantumledger-db-primary.default.svc.cluster.local:5432/cbdc_transactions?sslmode=require
+#      {{- end -}}
+#
+#    # Secret template for mutual TLS certs
+#    vault.hashicorp.com/agent-inject-secret-tls.crt: "pki_int/issue/cbdc-domain"
+#    vault.hashicorp.com/agent-inject-template-tls.crt: |
+#      {{- with secret "pki_int/issue/cbdc-domain" "common_name=ledger.cbdc.internal" -}}
+#      {{ .Data.certificate }}
+#      {{- end -}}
+#

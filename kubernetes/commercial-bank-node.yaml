@@ -1,0 +1,144 @@
+# ====================================================
+# Project QuantumLedger - Commercial Bank Gateways
+# ====================================================
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: chase-gateway
+  labels:
+    app: chase-gateway
+spec:
+  ports:
+    - port: 8080
+      targetPort: 8080
+  selector:
+    app: chase-gateway
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: chase-gateway
+  labels:
+    app: chase-gateway
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: chase-gateway
+  template:
+    metadata:
+      labels:
+        app: chase-gateway
+    spec:
+      containers:
+        - name: gateway
+          image: quantumledger/cbdc-settlement-gateway:v1.0.8
+          ports:
+            - containerPort: 8080
+          env:
+            - name: BANK_CODE
+              value: "CHASE"
+            - name: CENTRAL_BANK_ENDPOINT
+              value: "cbdc-ledger-headless.default.svc.cluster.local:50051"
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "512Mi"
+            limits:
+              cpu: "500m"
+              memory: "1Gi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: citi-gateway
+  labels:
+    app: citi-gateway
+spec:
+  ports:
+    - port: 8080
+      targetPort: 8080
+  selector:
+    app: citi-gateway
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: citi-gateway
+  labels:
+    app: citi-gateway
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: citi-gateway
+  template:
+    metadata:
+      labels:
+        app: citi-gateway
+    spec:
+      containers:
+        - name: gateway
+          image: quantumledger/cbdc-settlement-gateway:v1.0.8
+          ports:
+            - containerPort: 8080
+          env:
+            - name: BANK_CODE
+              value: "CITI"
+            - name: CENTRAL_BANK_ENDPOINT
+              value: "cbdc-ledger-headless.default.svc.cluster.local:50051"
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "512Mi"
+            limits:
+              cpu: "500m"
+              memory: "1Gi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: hsbc-gateway
+  labels:
+    app: hsbc-gateway
+spec:
+  ports:
+    - port: 8080
+      targetPort: 8080
+  selector:
+    app: hsbc-gateway
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hsbc-gateway
+  labels:
+    app: hsbc-gateway
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hsbc-gateway
+  template:
+    metadata:
+      labels:
+        app: hsbc-gateway
+    spec:
+      containers:
+        - name: gateway
+          image: quantumledger/cbdc-settlement-gateway:v1.0.8
+          ports:
+            - containerPort: 8080
+          env:
+            - name: BANK_CODE
+              value: "HSBC"
+            - name: CENTRAL_BANK_ENDPOINT
+              value: "cbdc-ledger-headless.default.svc.cluster.local:50051"
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "512Mi"
+            limits:
+              cpu: "500m"
+              memory: "1Gi"

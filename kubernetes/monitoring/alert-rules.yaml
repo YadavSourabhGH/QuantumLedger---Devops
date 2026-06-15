@@ -1,0 +1,50 @@
+# ====================================================
+# Project QuantumLedger - Prometheus Alerting Rules
+# ====================================================
+
+groups:
+  - name: cbdc-operational-alerts
+    rules:
+      # Alert for high API error rate
+      - alert: HighApiErrorRate
+        expr: sum(rate(http_requests_total{status=~"5.."}[5m])) / sum(rate(http_requests_total[5m])) * 100 > 5
+        for: 2m
+        labels:
+          severity: critical
+          tier: api
+        annotations:
+          summary: "High API Error Rate Detected"
+          description: "API Gateway is returning 5xx responses for more than 5% of total traffic. Current error rate is {{ $value | printf \"%.2f\" }}%."
+
+      # Alert for slow transactions
+      - alert: LatencyThresholdExceeded
+        expr: histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[5m])) by (le)) > 0.200
+        for: 3m
+        labels:
+          severity: warning
+          tier: application
+        annotations:
+          summary: "95th Percentile Transaction Latency > 200ms"
+          description: "CBDC Settlement Gateway response latency is high. 95% of transactions are taking longer than {{ $value }}s."
+
+      # Alert for missing StatefulSet pods (outage simulation)
+      - alert: LedgerNodeOffline
+        expr: kube_statefulset_replicas{statefulset="cbdc-ledger"} - kube_statefulset_status_replicas_ready{statefulset="cbdc-ledger"} > 0
+        for: 30s
+        labels:
+          severity: critical
+          tier: core-ledger
+        annotations:
+          summary: "Core Ledger StatefulSet Node Offline"
+          description: "One or more pods in the core ledger StatefulSet are in an unhealthy or offline state. Immediate failover intervention may be required."
+
+      # Alert for database desynchronization
+      - alert: LedgerIndexDivergence
+        expr: abs(cbdc_ledger_index{gateway="chase"} - cbdc_ledger_index{node="leader"}) > 10
+        for: 1m
+        labels:
+          severity: warning
+          tier: consensus
+        annotations:
+          summary: "Ledger Sync Divergence Detected"
+          description: "Commercial bank gateway index lag exceeds threshold. Chase gateway is {{ $value }} blocks behind the consensus leader."

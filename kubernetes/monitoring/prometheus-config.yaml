@@ -1,0 +1,83 @@
+# ====================================================
+# Project QuantumLedger - Prometheus Monitoring Scrap Rules
+# ====================================================
+
+global:
+  scrape_interval:     15s
+  evaluation_interval: 15s
+
+  # Attach metadata labels to any timeseries data
+  external_labels:
+    monitor: 'quantumledger-global-monitor'
+
+# Alertmanager configuration
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+            - 'alertmanager.monitoring.svc.cluster.local:9093'
+
+# Alert Rules Configuration files
+rule_files:
+  - "/etc/prometheus/alert-rules.yaml"
+
+scrape_configs:
+  # 1. Prometheus self monitoring
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # 2. Kubernetes Nodes Node-Exporter (CPU/Memory/Disk metrics)
+  - job_name: 'kubernetes-nodes'
+    kubernetes_sd_configs:
+      - role: node
+    relabel_configs:
+      - action: labelmap
+        regex: __meta_kubernetes_node_label_(.+)
+      - target_label: __address__
+        replacement: kubernetes.default.svc:443
+      - source_labels: [__meta_kubernetes_node_name]
+        regex: (.+)
+        target_label: __metrics_path__
+        replacement: /api/v1/nodes/${1}/proxy/metrics
+
+  # 3. CBDC API Gateways and Settlement pods
+  - job_name: 'kubernetes-pods'
+    kubernetes_sd_configs:
+      - role: pod
+    relabel_configs:
+      - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
+        action: keep
+        regex: true
+      - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_path]
+        action: replace
+        target_label: __metrics_path__
+        regex: (.+)
+      - source_labels: [__address__, __meta_kubernetes_pod_annotation_prometheus_io_port]
+        action: replace
+        regex: ([^:]+)(?::\d+)?;(\d+)
+        target_label: __address__
+        replacement: $1:$2
+      - action: labelmap
+        regex: __meta_kubernetes_pod_label_(.+)
+      - source_labels: [__meta_kubernetes_namespace]
+        action: replace
+        target_label: kubernetes_namespace
+      - source_labels: [__meta_kubernetes_pod_name]
+        action: replace
+        target_label: kubernetes_pod_name
+
+  # 4. Core Ledger StatefulSet database
+  - job_name: 'cbdc-core-ledger'
+    static_configs:
+      - targets:
+          - 'cbdc-ledger-headless.default.svc.cluster.local:8080'
+
+  # 5. Vault Secret Store monitoring
+  - job_name: 'hashicorp-vault'
+    metrics_path: '/v1/sys/metrics'
+    params:
+      format: ['prometheus']
+    bearer_token: 'quantum-vault-prometheus-token'
+    static_configs:
+      - targets: ['vault.security.svc.cluster.local:8200']
