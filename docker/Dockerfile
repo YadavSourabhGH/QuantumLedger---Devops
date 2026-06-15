@@ -13,6 +13,7 @@ RUN rm -rf /usr/share/nginx/html/* && \
 COPY ./index.html /usr/share/nginx/html/index.html
 COPY ./app.css /usr/share/nginx/html/app.css
 COPY ./app.js /usr/share/nginx/html/app.js
+COPY ./claymation_hero.png /usr/share/nginx/html/claymation_hero.png
 
 # Step 4: Add security hardened nginx configuration
 COPY ./docker/nginx.conf /etc/nginx/conf.d/cbdc-ops.conf
