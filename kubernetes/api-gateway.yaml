@@ -24,7 +24,7 @@ metadata:
   labels:
     app: api-gateway
 spec:
-  replicas: 3
+  replicas: 1
   strategy:
     type: RollingUpdate
     rollingUpdate:
@@ -50,11 +50,11 @@ spec:
               value: "production"
           resources:
             requests:
-              cpu: "500m"
-              memory: "512Mi"
+              cpu: "50m"
+              memory: "64Mi"
             limits:
-              cpu: "1000m"
-              memory: "1Gi"
+              cpu: "200m"
+              memory: "128Mi"
           readinessProbe:
             httpGet:
               path: /healthz
@@ -78,8 +78,8 @@ spec:
     apiVersion: apps/v1
     kind: Deployment
     name: api-gateway
-  minReplicas: 3
-  maxReplicas: 15
+  minReplicas: 1
+  maxReplicas: 5
   metrics:
     - type: Resource
       resource:
@@ -94,7 +94,7 @@ kind: PodDisruptionBudget
 metadata:
   name: api-gateway-pdb
 spec:
-  minAvailable: 2
+  minAvailable: 1
   selector:
     matchLabels:
       app: api-gateway

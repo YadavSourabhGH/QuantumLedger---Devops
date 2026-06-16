@@ -43,11 +43,11 @@ spec:
               value: "cbdc-ledger-headless.default.svc.cluster.local:50051"
           resources:
             requests:
-              cpu: "250m"
-              memory: "512Mi"
+              cpu: "50m"
+              memory: "64Mi"
             limits:
-              cpu: "500m"
-              memory: "1Gi"
+              cpu: "100m"
+              memory: "128Mi"
 ---
 apiVersion: v1
 kind: Service
@@ -90,11 +90,11 @@ spec:
               value: "cbdc-ledger-headless.default.svc.cluster.local:50051"
           resources:
             requests:
-              cpu: "250m"
-              memory: "512Mi"
+              cpu: "50m"
+              memory: "64Mi"
             limits:
-              cpu: "500m"
-              memory: "1Gi"
+              cpu: "100m"
+              memory: "128Mi"
 ---
 apiVersion: v1
 kind: Service
@@ -137,8 +137,8 @@ spec:
               value: "cbdc-ledger-headless.default.svc.cluster.local:50051"
           resources:
             requests:
-              cpu: "250m"
-              memory: "512Mi"
+              cpu: "50m"
+              memory: "64Mi"
             limits:
-              cpu: "500m"
-              memory: "1Gi"
+              cpu: "100m"
+              memory: "128Mi"

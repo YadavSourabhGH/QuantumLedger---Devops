@@ -26,7 +26,7 @@ metadata:
     app: cbdc-ledger
 spec:
   serviceName: cbdc-ledger-headless
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       app: cbdc-ledger
@@ -59,11 +59,11 @@ spec:
               value: "http://vault.security.svc.cluster.local:8200"
           resources:
             requests:
-              cpu: "1000m"
-              memory: "2Gi"
+              cpu: "100m"
+              memory: "128Mi"
             limits:
-              cpu: "2000m"
-              memory: "4Gi"
+              cpu: "200m"
+              memory: "256Mi"
           readinessProbe:
             httpGet:
               path: /healthz
