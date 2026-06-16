@@ -3,9 +3,7 @@
 // ====================================================
 
 pipeline {
-    agent {
-        label 'eks-jenkins-agent'
-    }
+    agent any
 
     environment {
         AWS_ACCOUNT_ID     = '123456789012'
