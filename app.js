@@ -102,7 +102,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const chartDataLatency = Array(15).fill(14);
   const chartDataCPU = Array(15).fill(8);
 
-  // --- Initialize Chart.js with Dark-Theme Styles ---
+  // --- Initialize Chart.js with Cream-Theme Styles ---
   const ctx = document.getElementById('metricsChart').getContext('2d');
   const metricsChart = new Chart(ctx, {
     type: 'line',
@@ -112,8 +112,8 @@ document.addEventListener('DOMContentLoaded', () => {
         {
           label: 'TPS (Throughput)',
           data: chartDataTPS,
-          borderColor: '#7b68ee', // Terraform Purple
-          backgroundColor: 'rgba(123, 104, 238, 0.08)',
+          borderColor: '#ff4d8b', // Brand Pink
+          backgroundColor: 'rgba(255, 77, 139, 0.05)',
           borderWidth: 2,
           yAxisID: 'y',
           tension: 0.35,
@@ -122,7 +122,7 @@ document.addEventListener('DOMContentLoaded', () => {
         {
           label: 'CPU Load (%)',
           data: chartDataCPU,
-          borderColor: '#ffd500', // Vault Yellow
+          borderColor: '#1a3a3a', // Brand Teal
           backgroundColor: 'transparent',
           borderWidth: 1.5,
           yAxisID: 'y1',
@@ -132,7 +132,7 @@ document.addEventListener('DOMContentLoaded', () => {
         {
           label: 'Latency (ms)',
           data: chartDataLatency,
-          borderColor: '#2e7d32', // Nomad Green
+          borderColor: '#e8b94a', // Brand Ochre
           backgroundColor: 'transparent',
           borderWidth: 1.5,
           yAxisID: 'y1',
@@ -149,26 +149,26 @@ document.addEventListener('DOMContentLoaded', () => {
           type: 'linear',
           display: true,
           position: 'left',
-          grid: { color: 'rgba(255, 255, 255, 0.08)' },
-          ticks: { color: '#b2b6bd', font: { size: 9 } },
-          title: { display: true, text: 'Throughput (TPS)', color: '#7b68ee', font: { size: 10 } }
+          grid: { color: 'rgba(0, 0, 0, 0.05)' },
+          ticks: { color: '#6a6a6a', font: { size: 9 } },
+          title: { display: true, text: 'Throughput (TPS)', color: '#ff4d8b', font: { size: 10 } }
         },
         y1: {
           type: 'linear',
           display: true,
           position: 'right',
           grid: { drawOnChartArea: false },
-          ticks: { color: '#b2b6bd', font: { size: 9 } },
-          title: { display: true, text: 'Percentage / Latency', color: '#ffd500', font: { size: 10 } }
+          ticks: { color: '#6a6a6a', font: { size: 9 } },
+          title: { display: true, text: 'Percentage / Latency', color: '#1a3a3a', font: { size: 10 } }
         },
         x: {
-          grid: { color: 'rgba(255, 255, 255, 0.08)' },
-          ticks: { color: '#b2b6bd', font: { size: 8 } }
+          grid: { color: 'rgba(0, 0, 0, 0.05)' },
+          ticks: { color: '#6a6a6a', font: { size: 8 } }
         }
       },
       plugins: {
         legend: {
-          labels: { color: '#ffffff', font: { size: 9, weight: '600' } },
+          labels: { color: '#0a0a0a', font: { size: 9, weight: '600' } },
           position: 'top'
         }
       }
