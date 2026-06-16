@@ -4,7 +4,6 @@ QuantumLedger is an enterprise-grade, multi-national Central Bank Digital Curren
 
 This repository implements the DevOps automation, Kubernetes orchestration, secret management, monitoring configurations, and a web-based **CBDC Operations Dashboard** to simulate and evaluate platform resilience under real-world stressors.
 
-> **Live Demo**: [http://3.84.104.8](http://3.84.104.8)  
 > **GitHub**: [YadavSourabhGH/QuantumLedger---Devops](https://github.com/YadavSourabhGH/QuantumLedger---Devops)
 
 ---
