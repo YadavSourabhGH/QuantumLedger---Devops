@@ -3,7 +3,7 @@
 # QuantumLedger - EC2 Deployment Script
 # ====================================================
 
-EC2_IP="3.84.104.8"
+EC2_IP="54.235.231.59"
 PEM_KEY="QuantumLedger.pem"
 USER_NAME="ubuntu" # Default user for Ubuntu AMIs. Change to "ec2-user" if using Amazon Linux.
 
@@ -20,14 +20,18 @@ if [ $? -ne 0 ]; then
   fi
 fi
 
-echo "Deploying files to EC2 (${USER_NAME}@${EC2_IP})..."
-# Sync the repository files to the EC2 instance (excluding git, node_modules, temp files)
-rsync -avz -e "ssh -i ${PEM_KEY} -o StrictHostKeyChecking=no" \
-  --exclude='.git/' \
-  --exclude='node_modules/' \
-  --exclude='.gemini/' \
-  --exclude='*.pem' \
-  ./ "${USER_NAME}@${EC2_IP}:~/QuantumLedger/"
+echo "Packaging files..."
+tar -czf project.tar.gz --exclude='./.git' --exclude='./node_modules' --exclude='./.gemini' --exclude='./*.pem' --exclude='./project.tar.gz' --exclude='./jenkins' --exclude='./kubernetes' --exclude='./terraform' --exclude='./docs' .
+
+echo "Deploying packaged files to EC2 (${USER_NAME}@${EC2_IP})..."
+ssh -i "${PEM_KEY}" -o StrictHostKeyChecking=no "${USER_NAME}@${EC2_IP}" "mkdir -p ~/QuantumLedger"
+scp -i "${PEM_KEY}" -o StrictHostKeyChecking=no project.tar.gz "${USER_NAME}@${EC2_IP}:~/"
+
+echo "Extracting files on EC2..."
+ssh -i "${PEM_KEY}" -o StrictHostKeyChecking=no "${USER_NAME}@${EC2_IP}" "tar -xzf ~/project.tar.gz -C ~/QuantumLedger/ && rm ~/project.tar.gz"
+
+# Clean up local archive
+rm project.tar.gz
 
 echo "Configuring Docker on EC2..."
 ssh -i "${PEM_KEY}" -o StrictHostKeyChecking=no "${USER_NAME}@${EC2_IP}" << 'EOF'

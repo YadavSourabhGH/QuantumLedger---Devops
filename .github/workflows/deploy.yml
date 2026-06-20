@@ -1,0 +1,80 @@
+name: CI/CD Pipeline - Deploy Website to AWS EC2
+
+on:
+  push:
+    branches:
+      - main
+      - master
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Package codebase
+        run: |
+          tar -czf project.tar.gz \
+            --exclude='./.git' \
+            --exclude='./node_modules' \
+            --exclude='./.gemini' \
+            --exclude='./*.pem' \
+            --exclude='./project.tar.gz' \
+            --exclude='./jenkins' \
+            --exclude='./kubernetes' \
+            --exclude='./terraform' \
+            --exclude='./docs' .
+
+      - name: Deploy to EC2
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.EC2_IP }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          port: 22
+          source: "project.tar.gz"
+          target: "~/"
+
+      - name: Extract and Run Stack on EC2
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_IP }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          port: 22
+          script: |
+            mkdir -p ~/QuantumLedger
+            tar -xzf ~/project.tar.gz -C ~/QuantumLedger/
+            rm ~/project.tar.gz
+            cd ~/QuantumLedger
+            
+            # Configure Docker if not present
+            if ! command -v docker &> /dev/null; then
+              sudo apt-get update -y
+              sudo apt-get install -y docker.io
+            fi
+            
+            # Configure Docker Compose if not present
+            if ! command -v docker-compose &> /dev/null && ! docker compose version &> /dev/null; then
+              sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+              sudo chmod +x /usr/local/bin/docker-compose
+            fi
+            
+            # Enable and start Docker service
+            sudo systemctl enable docker
+            sudo systemctl start docker
+            sudo usermod -aG docker $USER
+            
+            # Run Docker Compose
+            if docker compose version &> /dev/null; then
+              sudo docker compose -f docker/docker-compose.yml down
+              sudo docker compose -f docker/docker-compose.yml up --build -d
+            else
+              sudo docker-compose -f docker/docker-compose.yml down
+              sudo docker-compose -f docker/docker-compose.yml up --build -d
+            fi
+            
+            # Prune unused images to save disk space
+            sudo docker image prune -f
